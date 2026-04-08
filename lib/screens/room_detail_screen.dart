@@ -155,40 +155,71 @@ class _RoomDetailScreenState extends State<RoomDetailScreen> {
           ),
           Expanded(
             child: ListView.builder(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
               itemCount: widget.room.checklist.length,
               itemBuilder: (context, index) {
                 final item = widget.room.checklist[index];
-                return Row(
-                  children: [
-                    Expanded(
-                      child: CheckboxListTile(
-                        title: Text(item.name),
-                        value: item.isChecked,
-                        onChanged: (value) async {
-                          setState(() {
-                            item.isChecked = value ?? false;
-                          });
+                final textStyle = TextStyle(
+                  color: item.isChecked
+                      ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)
+                      : Theme.of(context).colorScheme.onSurface,
+                  decoration:
+                      item.isChecked ? TextDecoration.lineThrough : TextDecoration.none,
+                );
 
-                          await widget.onRoomChanged();
-                        },
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CheckboxListTile(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.outlineVariant,
+                            ),
+                          ),
+                          tileColor: Theme.of(context).colorScheme.surface,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 4,
+                          ),
+                          title: Text(item.name, style: textStyle),
+                          value: item.isChecked,
+                          onChanged: (value) async {
+                            setState(() {
+                              item.isChecked = value ?? false;
+                            });
+
+                            await widget.onRoomChanged();
+                          },
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      tooltip: 'Delete Task',
-                      onPressed: () => _deleteTask(index),
-                      icon: const Icon(Icons.delete_outline),
-                    ),
-                  ],
+                      IconButton(
+                        tooltip: 'Delete Task',
+                        onPressed: () => _deleteTask(index),
+                        icon: const Icon(Icons.delete_outline),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
           ),
+          SafeArea(
+            top: false,
+            minimum: const EdgeInsets.fromLTRB(16, 6, 16, 12),
+            child: SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: FilledButton.icon(
+                onPressed: _showAddItemDialog,
+                icon: const Icon(Icons.add),
+                label: const Text('Add Item'),
+              ),
+            ),
+          ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddItemDialog,
-        tooltip: 'Add Item',
-        child: const Icon(Icons.add),
       ),
     );
   }

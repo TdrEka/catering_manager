@@ -195,134 +195,172 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Row(
-        children: [
-          Container(
-            width: 260,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              border: Border(
-                right: BorderSide(
-                  color: Theme.of(context).dividerColor,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Container(
+                width: 260,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
                 ),
-              ),
-            ),
-            child: ListView.builder(
-              itemCount: widget.venues.length,
-              itemBuilder: (context, index) {
-                final venue = widget.venues[index];
-                final isSelected = selectedVenue == venue;
-                final isEvenRow = index.isEven;
-                final rowColor = isSelected
-                    ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.14)
-                    : isEvenRow
-                    ? Theme.of(
-                        context,
-                      ).colorScheme.surface.withValues(alpha: 0.45)
-                    : Colors.transparent;
-
-                return Column(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ListTile(
-                      tileColor: rowColor,
-                      selected: isSelected,
-                      selectedTileColor: Theme.of(
+                    const Text(
+                      'VENUES',
+                      style: TextStyle(
+                        fontSize: 13,
+                        letterSpacing: 1.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: Theme.of(
                         context,
-                      ).colorScheme.primary.withValues(alpha: 0.14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 4,
-                      ),
-                      title: Text(venue.name),
-                      trailing: IconButton(
-                        tooltip: 'Delete Venue',
-                        onPressed: () => _deleteVenue(venue),
-                        icon: const Icon(Icons.delete_outline),
-                      ),
-                      onTap: () {
-                        setState(() {
-                          selectedVenue = venue;
-                        });
-                      },
+                      ).colorScheme.outlineVariant.withValues(alpha: 0.5),
                     ),
-                    if (index < widget.venues.length - 1)
-                      Divider(
-                        height: 1,
-                        thickness: 1,
-                        indent: 12,
-                        endIndent: 12,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.outlineVariant.withValues(alpha: 0.35),
-                      ),
-                  ],
-                );
-              },
-            ),
-          ),
-          Expanded(
-            child: selectedVenue == null
-                ? const Center(
-                    child: Text('Select a venue to view its rooms.'),
-                  )
-                : GridView.builder(
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 1.5,
-                    ),
-                    itemCount: selectedVenue!.rooms.length,
-                    itemBuilder: (context, index) {
-                      final room = selectedVenue!.rooms[index];
-                      return Stack(
-                        children: [
-                          Positioned.fill(
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(12),
-                              onTap: () async {
-                                await Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                    builder: (context) => RoomDetailScreen(
-                                      room: room,
-                                      onRoomChanged: _notifySave,
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: widget.venues.length,
+                        itemBuilder: (context, index) {
+                          final venue = widget.venues[index];
+                          final isSelected = selectedVenue == venue;
+                          final rowColor = isSelected
+                              ? Colors.grey[300]
+                              : (index.isEven ? Colors.grey[100] : Colors.grey[50]);
+
+                          return Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: rowColor,
+                                  border: Border(
+                                    left: BorderSide(
+                                      color: isSelected
+                                          ? Colors.indigo
+                                          : Colors.transparent,
+                                      width: 5,
                                     ),
                                   ),
-                                );
-
-                                if (!mounted) {
-                                  return;
-                                }
-
-                                setState(() {});
-                              },
-                              child: RoomCard(room: room),
-                            ),
-                          ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: Material(
-                              color: Colors.white.withValues(alpha: 0.9),
-                              shape: const CircleBorder(),
-                              child: IconButton(
-                                tooltip: 'Delete Room',
-                                icon: const Icon(Icons.delete_outline),
-                                onPressed: () => _deleteRoom(room),
+                                ),
+                                child: ListTile(
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  title: Text(
+                                    venue.name,
+                                    style: TextStyle(
+                                      fontWeight:
+                                          isSelected ? FontWeight.w700 : FontWeight.w500,
+                                    ),
+                                  ),
+                                  trailing: IconButton(
+                                    tooltip: 'Delete Venue',
+                                    onPressed: () => _deleteVenue(venue),
+                                    icon: const Icon(Icons.delete_outline),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      selectedVenue = venue;
+                                    });
+                                  },
+                                ),
                               ),
-                            ),
+                              if (index < widget.venues.length - 1)
+                                Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  indent: 12,
+                                  endIndent: 12,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.outlineVariant.withValues(alpha: 0.35),
+                                ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              VerticalDivider(
+                width: 32,
+                thickness: 1,
+                color: Theme.of(context).dividerColor,
+              ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  child: selectedVenue == null
+                      ? const Center(
+                          child: Text('Select a venue to view its rooms.'),
+                        )
+                      : GridView.builder(
+                          padding: EdgeInsets.zero,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 1.5,
                           ),
-                        ],
-                      );
-                    },
-                  ),
+                          itemCount: selectedVenue!.rooms.length,
+                          itemBuilder: (context, index) {
+                            final room = selectedVenue!.rooms[index];
+                            return Stack(
+                              children: [
+                                Positioned.fill(
+                                  child: RoomCard(
+                                    room: room,
+                                    onTap: () async {
+                                      await Navigator.of(context).push(
+                                        MaterialPageRoute<void>(
+                                          builder: (context) => RoomDetailScreen(
+                                            room: room,
+                                            onRoomChanged: _notifySave,
+                                          ),
+                                        ),
+                                      );
+
+                                      if (!mounted) {
+                                        return;
+                                      }
+
+                                      setState(() {});
+                                    },
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: 8,
+                                  right: 8,
+                                  child: Material(
+                                    color: Colors.white.withValues(alpha: 0.9),
+                                    shape: const CircleBorder(),
+                                    child: IconButton(
+                                      tooltip: 'Delete Room',
+                                      icon: const Icon(Icons.delete_outline),
+                                      onPressed: () => _deleteRoom(room),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
